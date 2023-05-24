@@ -1,59 +1,33 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/wait.h>
-
-#define BUFSIZE 1024
+#include "main.h"
 
 /**
- * main - Entry point for simple shell
+ * execute_command - Executes the given command
+ * @command: The command to execute
  *
- * Return: Always 0
+ * Return: 0 on success, -1 on failure
  */
-int main(void)
+int execute_command(char *command)
 {
-    char buffer[BUFSIZE];
+    pid_t pid;
+    pid = fork();
 
-    while (1)
+    if (pid < 0)
     {
-        printf("#cisfun$ ");
-
-        if (fgets(buffer, BUFSIZE, stdin) == NULL)
-        {
-            if (feof(stdin))
-            {
-                printf("\n");
-                exit(EXIT_SUCCESS);
-            }
-            else
-            {
-                perror("simple_shell");
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        buffer[strcspn(buffer, "\n")] = 0;
-
-        pid_t pid;
-        pid = fork();
-
-        if (pid < 0)
+        perror("simple_shell");
+        return (-1);
+    }
+    else if (pid == 0)
+    {
+        if (execve(command, NULL, environ) == -1)
         {
             perror("simple_shell");
+            return (-1);
         }
-        else if (pid == 0)
-        {
-            if (execve(buffer, NULL, environ) == -1)
-            {
-                perror("simple_shell");
-            }
-            exit(EXIT_FAILURE);
-        }
-        else
-        {
-            wait(NULL);
-        }
+        exit(EXIT_FAILURE);
+    }
+    else
+    {
+        wait(NULL);
     }
 
     return (0);
