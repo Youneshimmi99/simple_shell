@@ -1,33 +1,33 @@
 #include "main.h"
 
-/**
- * execute_command - Executes the given command
- * @command: The command to execute
- *
- * Return: 0 on success, -1 on failure
- */
-int execute_command(char *command)
+int main(void)
 {
-    pid_t pid;
-    pid = fork();
+    char buffer[BUFSIZE];
 
-    if (pid < 0)
+    while (1)
     {
-        perror("simple_shell");
-        return (-1);
-    }
-    else if (pid == 0)
-    {
-        if (execve(command, NULL, environ) == -1)
+        printf("#cisfun$ ");
+
+        if (fgets(buffer, BUFSIZE, stdin) == NULL)
         {
-            perror("simple_shell");
-            return (-1);
+            if (feof(stdin))
+            {
+                printf("\n");
+                exit(EXIT_SUCCESS);
+            }
+            else
+            {
+                perror("shell");
+                exit(EXIT_FAILURE);
+            }
         }
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        wait(NULL);
+
+        buffer[strcspn(buffer, "\n")] = 0;
+
+        if (execute_command(buffer) == -1)
+        {
+            fprintf(stderr, "Error executing command.\n");
+        }
     }
 
     return (0);

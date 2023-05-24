@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#ifdef __unix__
 #include <sys/wait.h>
+#endif
 
 #define BUFSIZE 1024
 
